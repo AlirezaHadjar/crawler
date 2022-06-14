@@ -18,7 +18,6 @@ def get_data (url):
 def crawl ():
     data = []
     page = 0
-    finished = False
 
     while True:
         page = page + 1
@@ -27,13 +26,12 @@ def crawl ():
         soup = BeautifulSoup(html, features="lxml")
         list = soup.find("ul", {"class": "main_land_list"})
 
-        if finished: break
-
         links = list.find_all("li")
-        if len(links) == 0: finished = True
+        if len(links) == 0: break
 
         for link in tqdm(links):
             url = base_url + link.h3.a['href']
+            print(url)
             try:
                 data.append(get_data(url))
             except:
