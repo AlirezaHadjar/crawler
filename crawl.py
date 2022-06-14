@@ -17,7 +17,7 @@ def get_data (url):
 
 def crawl ():
     data = []
-    page = 15
+    page = 0
     finished = False
 
     while True:
@@ -25,19 +25,19 @@ def crawl ():
         url = get_page_url(page)
         html = requests.get(url).text
         soup = BeautifulSoup(html, features="lxml")
-        lists = soup.find_all("ul", {"class": "main_land_list"})
+        list = soup.find("ul", {"class": "main_land_list"})
 
         if finished: break
 
-        for list in lists:
-            links = list.find_all("li")
-            if len(links) == 0: finished = True
-            for link in tqdm(links):
-                url = base_url + link.h3.a['href']
-                try:
-                    data.append(get_data(url))
-                except:
-                    print(f"Failed to load {url}")
+        links = list.find_all("li")
+        if len(links) == 0: finished = True
+
+        for link in tqdm(links):
+            url = base_url + link.h3.a['href']
+            try:
+                data.append(get_data(url))
+            except:
+                print(f"Failed to load {url}")
     
     df = pandas.DataFrame(data)
     df.to_csv(f"crawled.csv")
